@@ -1,0 +1,17 @@
+{
+  "presets": [
+    [
+      "env",
+      {
+        "modules": false,
+        "targets": {
+          "chrome": 45
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    "external-helpers",
+    "transform-class-properties"
+  ]
+}
