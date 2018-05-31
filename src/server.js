@@ -7,7 +7,7 @@ import CONSTANTS from './constants';
 
 class Server {
     constructor (props) {
-        this.$$symbol = 'DX_FRAME_SDK';
+        this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
         // TODO 支持异步
         this.validator = props.validator;
         this.__TEST__ = props.__TEST__ || false;

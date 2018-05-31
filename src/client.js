@@ -7,7 +7,7 @@ import CONSTANTS from './constants';
 
 class Client {
     constructor (props) {
-        this.$$symbol = 'DX_FRAME_SDK';
+        this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
         this.token = {
             id: props.id,
             appKey: props.appKey,
