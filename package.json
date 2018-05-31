@@ -1,6 +1,6 @@
 {
   "name": "post-message-im",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "main": "dist/main.js",
   "scripts": {
     "build:client": "rollup -c --environment entry:client --watch",
@@ -13,7 +13,15 @@
   "husky": {
     "hooks": {}
   },
-  "keywords": [],
+  "homepage": "https://github.com/lizhengnacl/post-message-im",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lizhengnacl/post-message-im"
+  },
+  "bugs": {
+    "url": "https://github.com/lizhengnacl/post-message-im/issues"
+  },
+  "keywords": ["postMessage", "IM", "buffer", "cache", "browser"],
   "author": "",
   "license": "ISC",
   "description": "postMessage client, server",
