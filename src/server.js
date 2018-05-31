@@ -7,6 +7,7 @@ import CONSTANTS from './constants';
 
 class Server {
     constructor (props) {
+        check(props.validator, is.notUndef, 'validator is required');
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
         // TODO 支持异步
         this.validator = props.validator;

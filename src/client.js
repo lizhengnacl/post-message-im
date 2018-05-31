@@ -7,6 +7,10 @@ import CONSTANTS from './constants';
 
 class Client {
     constructor (props) {
+        check(props.id, is.notUndef, 'id is required');
+        check(props.appKey, is.notUndef, 'appKey is required');
+        check(props.jsTicket, is.notUndef, 'jsTicket is required');
+
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
         this.token = {
             id: props.id,
