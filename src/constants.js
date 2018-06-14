@@ -9,8 +9,9 @@ export const TYPE = {
 export const CODE = {
     Success: 0,
     Unauthorized: 401,
-    Request_Timeout: 408,
-    Not_Found: 404
+    Forbidden: 403,
+    Not_Found: 404,
+    Request_Timeout: 408
 };
 export default {
     TYPE: TYPE,

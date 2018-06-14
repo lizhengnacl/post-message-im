@@ -1,11 +1,12 @@
 {
   "name": "post-message-im",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "dist/main.js",
   "scripts": {
     "build:client": "rollup -c --environment entry:client --watch",
     "build:server": "rollup -c --environment entry:server --watch",
     "build:main": "rollup -c --environment entry:main --watch",
+    "build": "rollup -c --environment entry:client && rollup -c --environment entry:server && rollup -c --environment entry:main",
     "eslint": "eslint dist",
     "prepublish": "echo Do you update the npm version?",
     "test": "jest"
