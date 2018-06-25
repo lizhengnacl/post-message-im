@@ -13,7 +13,17 @@ export const CODE = {
     Not_Found: 404,
     Request_Timeout: 408
 };
+
+export const CODE_TYPE = {
+    0: 'Success',
+    401: 'Unauthorized',
+    403: 'Forbidden',
+    404: 'Not_Found',
+    408: 'Request_Timeout',
+};
+
 export default {
     TYPE: TYPE,
-    CODE: CODE
+    CODE: CODE,
+    CODE_TYPE: CODE_TYPE
 }

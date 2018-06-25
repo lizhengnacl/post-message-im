@@ -204,5 +204,6 @@ response(frameId, {
 
 ## TODO 
 1. Parent部分支持异步 `done`
-2. Child超时机制
+2. Child超时机制 `todo`
 3. 类型版本控制，遗弃 `done`
+4. 建立链接的过程 `todo`

@@ -2,7 +2,7 @@
  * * Created by lee on 2018/2/2
  */
 
-import { log, check, is, isPromise } from './utils';
+import { log, check, is, isPromise, getResponseTemplate} from './utils';
 import CONSTANTS from './constants';
 
 class Server {
@@ -80,13 +80,7 @@ class Server {
         if(ok) {
             this.handleMonitorResponse(data);
         } else {
-            let res = {
-                rescode: CONSTANTS.CODE.Unauthorized,
-                data: {
-                    message: 'Unauthorized'
-                }
-            };
-            this.response(Object.assign({}, data, { data: res }))
+            this.response(Object.assign({}, data, { data: getResponseTemplate(401) }))
         }
     };
 
@@ -136,6 +130,7 @@ class Server {
         data.$$symbol = this.$$symbol;
         data.meta = this.getMeta(data.meta);
         let frame = this.getFrameWindow(id);
+        // TODO 由frame可用性切到程序可用性
         if(frame) {
             this.postMessageToChild(frame, data)
         } else {
@@ -186,23 +181,30 @@ class Server {
             this.monitorPool[data.type].push(data);
         }
     };
-    handleMonitorResponse = (res) => {
-        let { type } = res;
+    handleMonitorResponse = (data) => {
+        let { type } = data;
         check(type, is.notUndef, 'the type info in the client request is required');
         // 遍历得到所有符合的类型
         let monitorData;
-        Object.keys(this.monitorPool).forEach((t) => {
+        let monitorKeys = Object.keys(this.monitorPool);
+        monitorKeys.forEach((t) => {
             // 先找到类型数据
             if(type === t) {
                 // 再通知数据中所有注册的事件
                 monitorData = this.monitorPool[t];
                 check(monitorData, is.array, 'the monitor data is not a array type');
                 monitorData.forEach((m) => {
-                    m.callback(res);
+                    m.callback(data);
                 });
             }
         });
+
+        // 未被注册处理的事件
+        if(monitorKeys.indexOf(type) === -1){
+            this.response(Object.assign({}, data, { data: getResponseTemplate(404) }))
+        }
     };
 }
 
+Server.getResponseTemplate = getResponseTemplate;
 export default Server;

@@ -1,6 +1,7 @@
 /**
  * * Created by lee on 2018/5/26
  */
+import CONSTANTS from './constants';
 
 /**
  * https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
@@ -44,4 +45,22 @@ export function log(level, message, error) {
 
 export function isPromise(data){
     return typeof data === 'object' && typeof data.then === 'function';
+}
+
+export function getResponseTemplate(code, data){
+    let res = {
+        rescode: code,
+    };
+
+    if(CONSTANTS.CODE_TYPE[code]){
+        res.data = {
+            message: CONSTANTS.CODE_TYPE[code]
+        };
+    }
+
+    if(data !== void 0){
+        res.data = data;
+    }
+
+    return res;
 }
