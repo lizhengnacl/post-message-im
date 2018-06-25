@@ -35,14 +35,29 @@ class Server {
             try {
                 data = JSON.parse(data);
             } catch(err) {
+                if(data && data.type === 'webpackOk') return;
                 log('error', 'json parse error', err.message);
                 // 提前结束
+                return;
+            }
+            if(!this._checkSource(e, data.token && data.token.id)) {
+                log('warn', 'client id is not exist or duplicated', data.token);
                 return;
             }
             if(data.$$symbol === this.$$symbol) {
                 this.distribute(data);
             }
         }, false);
+    };
+
+    _checkSource = (e, id) => {
+        // 防止伪造ID
+        let iframe = document.getElementById(id);
+        if(iframe) {
+            return iframe.contentWindow === e.source
+        } else {
+            return false;
+        }
     };
 
     distribute = (data) => {
@@ -117,6 +132,7 @@ class Server {
 
     _response = (data) => {
         let { token: { id } } = data;
+
         data.$$symbol = this.$$symbol;
         data.meta = this.getMeta(data.meta);
         let frame = this.getFrameWindow(id);

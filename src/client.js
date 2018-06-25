@@ -8,8 +8,8 @@ import CONSTANTS from './constants';
 class Client {
     constructor (props) {
         check(props.id, is.notUndef, 'id is required');
-        check(props.appKey, is.notUndef, 'appKey is required');
-        check(props.jsTicket, is.notUndef, 'jsTicket is required');
+        // check(props.appKey, is.notUndef, 'appKey is required');
+        // check(props.jsTicket, is.notUndef, 'jsTicket is required');
 
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
         this.token = {
@@ -36,6 +36,7 @@ class Client {
             try {
                 data = JSON.parse(data);
             } catch(err) {
+                if(data && data.type === 'webpackOk') return;
                 log('error', 'json parse error', err.message);
                 // 提前结束
                 return;
@@ -47,15 +48,22 @@ class Client {
     };
 
     distribute = (data) => {
-        // 拉模型
-        if(data.meta && data.meta.model === 'pull') {
-            // 处理响应
-            let callbackData = this.handleRequestResponse(data);
-            this.removeRequestPool(data);
-            return callbackData;
+        if(!is.array(data)){
+            // 拉模型
+            if(data.meta && data.meta.model === 'pull') {
+                // 处理响应
+                let callbackData = this.handleRequestResponse(data);
+                this.removeRequestPool(data);
+                return callbackData;
+            }
+            // 推模型，由上层往下推数据 push model
+            return this.handleMonitorResponse(data);
+        }else{
+            // 支持分发离线消息列表
+            data.forEach(m => {
+                this.distribute(m);
+            })
         }
-        // 推模型，由上层往下推数据 push model
-        return this.handleMonitorResponse(data);
     };
 
     postMessage = (data) => {

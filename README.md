@@ -39,9 +39,6 @@ client.request({
 
 client.on({
     type: '', // 监听类型
-    params: { // 针对监听类型相关的参数
-        
-    },
     callback: (res) => { // 返回值
         
     }
@@ -54,7 +51,9 @@ client.request({
         
     },
     callback: (res) => { // 返回值
-        
+        // 离线消息可能积攒了多个，可自行选择如何处理
+        client.distribute(res[0]); // 分发某个离线消息到对应on事件
+        // client.distribute(res); // 分发所有离线消息到对应on事件
     }
 })
 ```
@@ -86,9 +85,6 @@ const server = new Server({
 // 注册事件，监听来自client的request
 server.on({
     type: '', // 监听类型
-    params: { // 针对监听类型相关的参数
-        
-    },
     callback: (res) => { // 返回值
         // server收到监听后，进行相关处理，得到结果data
         server.response(Object.assign({}, res, {data: data}))
