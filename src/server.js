@@ -10,7 +10,6 @@ class Server {
         check(props.validator, is.notUndef, 'validator is required');
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
         this.prefixOfId = props.prefixOfId || '';
-        // TODO 支持异步
         this.validator = props.validator;
         this.__TEST__ = props.__TEST__ || false;
         this.CONSTANTS = CONSTANTS;
@@ -164,7 +163,6 @@ class Server {
         let { token: { id } } = data;
         let offlineResponse = this.offlinePool[id];
         this.removeOfflinePool(id);
-        // TODO 是分发给所有注册的事件，还是一次性发给child 注册的离线事件
         // 这里先按一次性处理，坏处是消息体结构暴露给业务方了
         this._response(Object.assign({}, data, { data: offlineResponse }));
     };

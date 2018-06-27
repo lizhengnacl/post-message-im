@@ -1,6 +1,9 @@
 ## 概述
 浏览器中的父窗口与iframe的postMessage通信，可以理解为一种消息模型。
-iframe（client）向父窗口（server）发出请求（client.request），父窗口监听（server.on）到请求后，经过一系列的操作，将结果响应（server.response）给iframe；或者父窗口主动推送（server.response）数据给iframe，iframe监听（client.on）到推送后，进行后续操作。
+
+iframe（client）向父窗口（server）发出请求（client.request），父窗口监听（server.on）到请求后，经过一系列的操作，将结果响应（server.response）给iframe；
+
+或者父窗口主动推送（server.response）数据给iframe，iframe监听（client.on）到推送后，进行后续操作。
 
 ## Feature
 * ES5，支持所有支持ES5浏览器
