@@ -2,13 +2,14 @@
  * * Created by lee on 2018/2/2
  */
 
-import { log, check, is, isPromise, getResponseTemplate} from './utils';
+import { log, check, is, isPromise, getResponseTemplate } from './utils';
 import CONSTANTS from './constants';
 
 class Server {
     constructor (props) {
         check(props.validator, is.notUndef, 'validator is required');
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
+        this.prefixOfId = props.prefixOfId || '';
         // TODO 支持异步
         this.validator = props.validator;
         this.__TEST__ = props.__TEST__ || false;
@@ -41,7 +42,7 @@ class Server {
                 return;
             }
             if(!this._checkSource(e, data.token && data.token.id)) {
-                log('warn', 'client id is not exist or duplicated', data.token);
+                log('error', 'client id is not exist or duplicated', data.token);
                 return;
             }
             if(data.$$symbol === this.$$symbol) {
@@ -52,6 +53,7 @@ class Server {
 
     _checkSource = (e, id) => {
         // 防止伪造ID
+        id = this.prefixOfId + id;
         let iframe = document.getElementById(id);
         if(iframe) {
             return iframe.contentWindow === e.source
@@ -91,6 +93,7 @@ class Server {
     };
 
     getFrameWindow = (id) => {
+        id = this.prefixOfId + id;
         return document.getElementById(id) || null;
     };
 
@@ -200,7 +203,7 @@ class Server {
         });
 
         // 未被注册处理的事件
-        if(monitorKeys.indexOf(type) === -1){
+        if(monitorKeys.indexOf(type) === -1) {
             this.response(Object.assign({}, data, { data: getResponseTemplate(404) }))
         }
     };
