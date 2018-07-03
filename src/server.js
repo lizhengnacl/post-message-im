@@ -40,11 +40,11 @@ class Server {
                 // 提前结束
                 return;
             }
-            if(!this._checkSource(e, data.token && data.token.id)) {
-                log('error', 'client id is not exist or duplicated', data.token);
-                return;
-            }
-            if(data.$$symbol === this.$$symbol) {
+            if(data && (data.$$symbol === this.$$symbol)) {
+                if(!this._checkSource(e, data.token && data.token.id)) {
+                    log('error', 'client id is not exist or duplicated', data.token);
+                    return;
+                }
                 this.distribute(data);
             }
         }, false);
