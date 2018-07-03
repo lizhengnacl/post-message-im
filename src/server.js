@@ -156,7 +156,7 @@ class Server {
     };
     removeOfflinePool = (frameId) => {
         // 暂时将粒度做到frame，获取离线时，一次性全返回
-        delete this.offlinePool[frameId]
+        this.offlinePool[frameId] = [];
     };
     handleOfflinePool = (data) => {
         // 当触发获取离线消息时，frame对象是准备好的
