@@ -10,7 +10,7 @@
     "eslint": "eslint dist",
     "prepublish": "echo Do you update the npm version?",
     "test": "jest",
-    "publish": "npm publish --registry http://registry.npmjs.org"
+    "deploy": "npm publish --registry http://registry.npmjs.org"
   },
   "husky": {
     "hooks": {}
