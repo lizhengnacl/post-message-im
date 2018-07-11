@@ -10,7 +10,8 @@ class Server {
         check(props.validator, is.notUndef, 'validator is required');
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
         this.prefixOfId = props.prefixOfId || '';
-        this.validator = props.validator;
+        this.validator = props.validator || function() {return true;};
+        this.dataFilter = props.dataFilter || function(data) {return data};
         this.__TEST__ = props.__TEST__ || false;
         this.CONSTANTS = CONSTANTS;
         this.init();
@@ -131,6 +132,10 @@ class Server {
 
         data.$$symbol = this.$$symbol;
         data.meta = this.getMeta(data.meta);
+
+        // 数据过滤
+        data = this.dataFilter(data);
+
         let frame = this.getFrameWindow(id);
         // TODO 由frame可用性切到程序可用性
         if(frame) {

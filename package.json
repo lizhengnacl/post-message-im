@@ -1,6 +1,6 @@
 {
   "name": "post-message-im",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "main": "dist/main.js",
   "scripts": {
     "build:client": "rollup -c --environment entry:client --watch",
@@ -9,7 +9,8 @@
     "build": "rollup -c --environment entry:client && rollup -c --environment entry:server && rollup -c --environment entry:main",
     "eslint": "eslint dist",
     "prepublish": "echo Do you update the npm version?",
-    "test": "jest"
+    "test": "jest",
+    "publish": "npm publish --registry http://registry.npmjs.org"
   },
   "husky": {
     "hooks": {}
