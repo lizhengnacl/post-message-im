@@ -11,6 +11,7 @@ class Server {
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
         this.prefixOfId = props.prefixOfId || '';
         this.validator = props.validator || function() {return true;};
+        // 返回null表示中断本次请求
         this.dataFilter = props.dataFilter || function(data) {return data};
         this.__TEST__ = props.__TEST__ || false;
         this.CONSTANTS = CONSTANTS;
@@ -135,6 +136,9 @@ class Server {
 
         // 数据过滤
         data = this.dataFilter(data);
+        if(data === null) {
+            return;
+        }
 
         let frame = this.getFrameWindow(id);
         // TODO 由frame可用性切到程序可用性
