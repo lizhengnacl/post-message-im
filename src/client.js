@@ -42,7 +42,8 @@ class Client {
                 return;
             }
             if(data.$$symbol === this.$$symbol){
-                this.distribute(data);
+                // 只处理iframe的情况
+                parent !== window && this.distribute(data);
             }
         }, false);
     };
