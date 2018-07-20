@@ -25,7 +25,7 @@ class Client {
     static CONSTANTS = CONSTANTS;
 
     init = () => {
-        if(!this.__TEST__){
+        if(!this.__TEST__) {
             this.subscribe();
         }
     };
@@ -41,7 +41,7 @@ class Client {
                 // 提前结束
                 return;
             }
-            if(data.$$symbol === this.$$symbol){
+            if(data.$$symbol === this.$$symbol) {
                 // 只处理iframe的情况
                 parent !== window && this.distribute(data);
             }
@@ -49,7 +49,7 @@ class Client {
     };
 
     distribute = (data) => {
-        if(!is.array(data)){
+        if(!is.array(data)) {
             // 拉模型
             if(data.meta && data.meta.model === 'pull') {
                 // 处理响应
@@ -59,7 +59,7 @@ class Client {
             }
             // 推模型，由上层往下推数据 push model
             return this.handleMonitorResponse(data);
-        }else{
+        } else {
             // 支持分发离线消息列表
             data.forEach(m => {
                 this.distribute(m);
@@ -80,7 +80,7 @@ class Client {
         data.meta.model = 'pull';
         data.token = this.token;
         this.addRequestPool(data);
-        if(!this.__TEST__){
+        if(!this.__TEST__) {
             this.postMessage(data);
         }
         return data;
@@ -144,16 +144,16 @@ class Client {
     handleMonitorResponse = (res) => {
         check(res.data, is.notUndef, 'the data info in the response is required');
 
-        let { data, type} = res;
+        let { data, type } = res;
         // 遍历得到所有符合的类型
-        let monitorData;
+        let monitorList;
         Object.keys(this.monitorPool).forEach((t) => {
             // 先找到类型数据
-            if(type === t){
+            if(type === t) {
                 // 再通知数据中所有注册的事件
-                monitorData = this.monitorPool[t];
-                check(monitorData, is.array, 'the monitor data is not a array type');
-                monitorData.forEach((m) => {
+                monitorList = this.monitorPool[t];
+                check(monitorList, is.array, 'the monitor data is not a array type');
+                monitorList.forEach((m) => {
                     m.callback(data);
                 });
             }
