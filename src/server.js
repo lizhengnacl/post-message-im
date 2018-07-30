@@ -204,7 +204,13 @@ class Server {
                 monitorData = this.monitorPool[t];
                 check(monitorData, is.array, 'the monitor data is not a array type');
                 monitorData.forEach((m) => {
-                    m.callback(data);
+                    try {
+                        m.callback(data);
+                    } catch(e) {
+                        if(typeof m.onError === 'function') {
+                            m.onError(e);
+                        }
+                    }
                 });
             }
         });
