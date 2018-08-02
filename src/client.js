@@ -121,7 +121,15 @@ class Client {
         let requestData = this.requestPool[meta.uuid];
 
         check(requestData, is.notUndef, 'can not find the request info in requestPool');
-        requestData.callback(data);
+        try {
+            requestData.callback(data);
+        } catch(e) {
+            if(typeof requestData.onError === 'function') {
+                requestData.onError(e);
+            } else {
+                throw new Error(e);
+            }
+        }
         return data;
     };
 
@@ -154,7 +162,15 @@ class Client {
                 monitorList = this.monitorPool[t];
                 check(monitorList, is.array, 'the monitor data is not a array type');
                 monitorList.forEach((m) => {
-                    m.callback(data);
+                    try {
+                        m.callback(data);
+                    } catch(e) {
+                        if(typeof m.onError === 'function') {
+                            m.onError(e);
+                        } else {
+                            throw new Error(e);
+                        }
+                    }
                 });
             }
         });
