@@ -1,3 +1,6 @@
+0.0.18
+subscribe parse
+
 0.0.16
 client handle on error
 

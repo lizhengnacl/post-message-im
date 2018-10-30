@@ -35,7 +35,9 @@ class Server {
         window.addEventListener('message', (e) => {
             let data = e.data;
             try {
-                data = JSON.parse(data);
+                if(is.string(data)){
+                    data = JSON.parse(data);
+                }
             } catch(err) {
                 if(data && data.type === 'webpackOk') return;
                 log('error', 'json parse error', err.message);
