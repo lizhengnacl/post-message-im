@@ -1,3 +1,6 @@
+0.0.19
+handle callback error
+
 0.0.18
 subscribe parse
 

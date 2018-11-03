@@ -34,7 +34,7 @@ class Client {
         window.addEventListener('message', (e) => {
             let data = e.data;
             try {
-                if(is.string(data)){
+                if(is.string(data)) {
                     data = JSON.parse(data);
                 }
             } catch(err) {
@@ -100,6 +100,8 @@ class Client {
     // 请求事件池
     requestPool = {};
     addRequestPool = (data) => {
+        check(data.type, is.notUndef, 'type is required');
+        check(data.callback, is.notUndef, 'callback is required');
         check(data.meta, is.notUndef, 'meta info is required');
         if(!this.requestPool[data.meta.uuid]) {
             this.requestPool[data.meta.uuid] = data;
@@ -123,15 +125,7 @@ class Client {
         let requestData = this.requestPool[meta.uuid];
 
         check(requestData, is.notUndef, 'can not find the request info in requestPool');
-        try {
-            requestData.callback(data);
-        } catch(e) {
-            if(typeof requestData.onError === 'function') {
-                requestData.onError(e);
-            } else {
-                throw new Error(e);
-            }
-        }
+        requestData.callback(data);
         return data;
     };
 
@@ -145,6 +139,9 @@ class Client {
     // 监听事件池
     monitorPool = {};
     addMonitorPool = (data) => {
+        check(data.type, is.notUndef, 'type is required');
+        check(data.callback, is.notUndef, 'callback is required');
+
         if(!this.monitorPool[data.type]) {
             this.monitorPool[data.type] = [data];
         } else {
@@ -164,15 +161,7 @@ class Client {
                 monitorList = this.monitorPool[t];
                 check(monitorList, is.array, 'the monitor data is not a array type');
                 monitorList.forEach((m) => {
-                    try {
-                        m.callback(data);
-                    } catch(e) {
-                        if(typeof m.onError === 'function') {
-                            m.onError(e);
-                        } else {
-                            throw new Error(e);
-                        }
-                    }
+                    m.callback(data);
                 });
             }
         });

@@ -35,7 +35,7 @@ class Server {
         window.addEventListener('message', (e) => {
             let data = e.data;
             try {
-                if(is.string(data)){
+                if(is.string(data)) {
                     data = JSON.parse(data);
                 }
             } catch(err) {
@@ -187,6 +187,9 @@ class Server {
     // 监听事件池
     monitorPool = {};
     addMonitorPool = (data) => {
+        check(data.type, is.notUndef, 'type is required');
+        check(data.callback, is.notUndef, 'callback is required');
+
         if(!this.monitorPool[data.type]) {
             this.monitorPool[data.type] = [data];
         } else {
@@ -206,13 +209,7 @@ class Server {
                 monitorData = this.monitorPool[t];
                 check(monitorData, is.array, 'the monitor data is not a array type');
                 monitorData.forEach((m) => {
-                    try {
-                        m.callback(data);
-                    } catch(e) {
-                        if(typeof m.onError === 'function') {
-                            m.onError(e);
-                        }
-                    }
+                    m.callback(data);
                 });
             }
         });
