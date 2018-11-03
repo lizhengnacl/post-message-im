@@ -1,3 +1,6 @@
+[![NPM version][npm-image]][npm-url]
+
+
 ## 概述
 页面`server`与iframe`client`的通信过程，可以用一种简易的消息模型来理解。
 
@@ -63,3 +66,7 @@ server.on({
 
 server.response('frameId', server.CONSTANTS.TYPE.SOME_SPECIFIC_TYPE, data)
 ```
+
+
+[npm-image]: https://img.shields.io/npm/v/post-message-im.svg?style=flat-square
+[npm-url]: https://www.npmjs.com/package/post-message-im
