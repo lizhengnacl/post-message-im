@@ -90,7 +90,13 @@ client.request = promisify(c.request, c);
 
 client.request({
     type: 'getSessionInfo',
-}).then(({rescode, data}) => {})
+}).then((data) => {})
+
+// 这种方式也支持，显式的callback参数优先级会更高，但不建议这么使用
+c.request({
+    type: 'getSessionInfo',
+    callback: (err, data) => {}
+}).then((data) => {})
 ```
 
 
