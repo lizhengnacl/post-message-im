@@ -89,12 +89,12 @@ let promisify = (fn, receiver = null) => {
 client.request = promisify(c.request, c);
 
 client.request({
-    type: 'getSessionInfo',
+    type: '',
 }).then((data) => {})
 
 // 这种方式也支持，显式的callback参数优先级会更高，但不建议这么使用
 c.request({
-    type: 'getSessionInfo',
+    type: '',
     callback: (err, data) => {}
 }).then((data) => {})
 ```
