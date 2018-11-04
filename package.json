@@ -1,6 +1,6 @@
 {
   "name": "post-message-im",
-  "version": "0.0.19",
+  "version": "0.1.0",
   "main": "dist/main.js",
   "scripts": {
     "build:client": "rollup -c --environment entry:client --watch",

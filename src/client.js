@@ -74,7 +74,8 @@ class Client {
     };
 
     // 发出post请求
-    request = (data) => {
+    request = (data, callback) => {
+        data.callback = data.callback || callback;
         // 用于区分postMessage来源
         data.$$symbol = this.$$symbol;
         data.meta = this.getMeta();
@@ -125,13 +126,14 @@ class Client {
         let requestData = this.requestPool[meta.uuid];
 
         check(requestData, is.notUndef, 'can not find the request info in requestPool');
-        requestData.callback(data);
+        requestData.callback(null, data);
         return data;
     };
 
     // 注册on事件
     // TODO once remove
-    on = (data) => {
+    on = (data, callback) => {
+        data.callback = data.callback || callback;
         this.addMonitorPool(data);
         return data;
     };
@@ -161,7 +163,7 @@ class Client {
                 monitorList = this.monitorPool[t];
                 check(monitorList, is.array, 'the monitor data is not a array type');
                 monitorList.forEach((m) => {
-                    m.callback(data);
+                    m.callback(null, data);
                 });
             }
         });

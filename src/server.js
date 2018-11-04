@@ -179,7 +179,8 @@ class Server {
     };
 
     // 注册on事件
-    on = (data) => {
+    on = (data, callback) => {
+        data.callback = data.callback || callback;
         this.addMonitorPool(data);
         return data;
     };
@@ -209,7 +210,7 @@ class Server {
                 monitorData = this.monitorPool[t];
                 check(monitorData, is.array, 'the monitor data is not a array type');
                 monitorData.forEach((m) => {
-                    m.callback(data);
+                    m.callback(null, data);
                 });
             }
         });

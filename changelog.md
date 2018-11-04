@@ -1,3 +1,6 @@
+0.1.0
+callback参数调整为function(err, data){}，支持promisify
+
 0.0.19
 handle callback error
 
