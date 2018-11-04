@@ -24,17 +24,17 @@ const client = new Client({id: 'iframe id'})
 client.request({
     type: '', 
     params: {},
-    callback: (res) => {}
+    callback: (err, res) => {}
 })
 
 client.on({
     type: '',
-    callback: (res) => {}
+    callback: (err, res) => {}
 })
 
 client.request({
     type: 'offline',
-    callback: (res) => {
+    callback: (err, res) => {
         client.distribute(res);
     }
 })
@@ -58,13 +58,39 @@ const server = new Server({validator: () => {}})
 
 server.on({
     type: '',
-    callback: (res) => {
+    callback: (err, res) => {
         // get data 
         server.response(Object.assign({}, res, {data: data}))
     }
 })
 
 server.response('frameId', server.CONSTANTS.TYPE.SOME_SPECIFIC_TYPE, data)
+```
+
+##  Promisify
+
+可以选择业界任意一个标准的promisify库，例如：
+- bluebird 模块里有 promisify 方法
+- es6-promisify 模块
+- ThinkJS 里的 promisify 方法
+
+当然，也可以直接使用下面的示例代码
+```
+let promisify = (fn, receiver = null) => {
+    return (...args) => {
+        return new Promise((resolve, reject) => {
+            fn.apply(receiver, [...args, (err, data) => {
+                return err? reject(err): resolve(data);
+            }]);
+        });
+    };
+};
+
+client.request = promisify(c.request, c);
+
+client.request({
+    type: 'getSessionInfo',
+}).then(({rescode, data}) => {})
 ```
 
 
