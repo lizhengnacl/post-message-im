@@ -1,3 +1,6 @@
+0.1.1
+离线消息处理逻辑
+
 0.1.0
 callback参数调整为function(err, data){}，支持promisify
 

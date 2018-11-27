@@ -169,10 +169,10 @@ class Server {
         // 暂时将粒度做到frame，获取离线时，一次性全返回
         this.offlinePool[frameId] = [];
     };
-    handleOfflinePool = (data) => {
+    handleOfflinePool = (err, data) => {
         // 当触发获取离线消息时，frame对象是准备好的
         let { token: { id } } = data;
-        let offlineResponse = this.offlinePool[id];
+        let offlineResponse = this.offlinePool[id] || [];
         this.removeOfflinePool(id);
         // 这里先按一次性处理，坏处是消息体结构暴露给业务方了
         this._response(Object.assign({}, data, { data: offlineResponse }));
