@@ -7,13 +7,24 @@ import CONSTANTS from './constants';
 
 class Server {
     constructor (props) {
-        check(props.validator, is.notUndef, 'validator is required');
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
         this.prefixOfId = props.prefixOfId || '';
-        this.validator = props.validator || function() {return true;};
+        this.validator = (props.validator && props.validator.bind(this)) || function() {return true;};
         // 返回null表示中断本次请求
         this.dataFilter = props.dataFilter || function(data) {return data};
         this.__TEST__ = props.__TEST__ || false;
+
+        // 将与环境，electron、web，耦合的节点抛出去，交给上层处理
+        // 限制上层不要使用箭头函数
+        this.subscribe = (props.subscribe && props.subscribe.bind(this)) || this.subscribe;
+        // 通过ID找到窗体
+        this.getFrameWindow = (props.getFrameWindow && props.getFrameWindow.bind(this)) || this.getFrameWindow;
+        // 通过窗体发消息
+        this.postMessageToChild = (props.postMessageToChild && props.postMessageToChild.bind(this)) || this.postMessageToChild;
+
+        // 单个客户端缓存池容量
+        this.capacity = props.capacity || 100;
+
         this.CONSTANTS = CONSTANTS;
         this.init();
     }
@@ -164,15 +175,21 @@ class Server {
         } else {
             this.offlinePool[id].push(data);
         }
+        // 单个客户端，只存储定量的离线消息，防止某些客户端肯本不处理离线消息导致的内存泄露
+        if(this.offlinePool[id].length > this.capacity) {
+            this.offlinePool[id] = this.offlinePool[id].slice(-this.capacity);
+        }
     };
     removeOfflinePool = (frameId) => {
         // 暂时将粒度做到frame，获取离线时，一次性全返回
         this.offlinePool[frameId] = [];
     };
-    handleOfflinePool = (data) => {
+    // 适配 Promisify
+    handleOfflinePool = (err, data) => {
         // 当触发获取离线消息时，frame对象是准备好的
         let { token: { id } } = data;
-        let offlineResponse = this.offlinePool[id];
+        // 默认值，没有任何离线消息时，客户端发起离线请求的情况
+        let offlineResponse = this.offlinePool[id] || [];
         this.removeOfflinePool(id);
         // 这里先按一次性处理，坏处是消息体结构暴露给业务方了
         this._response(Object.assign({}, data, { data: offlineResponse }));

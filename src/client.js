@@ -18,6 +18,12 @@ class Client {
             jsTicket: props.jsTicket
         };
         this.__TEST__ = props.__TEST__ || false;
+
+        // 与环境，electron、web耦合的节点暴露出去，交给上层处理
+        // 限制上层不要使用箭头函数
+        this.postMessage = (props.postMessage && props.postMessage.bind(this)) || this.postMessage;
+        this.subscribe = (props.subscribe && props.subscribe.bind(this)) || this.subscribe;
+
         this.CONSTANTS = CONSTANTS;
         this.init();
     }
@@ -84,7 +90,10 @@ class Client {
         data.token = this.token;
         this.addRequestPool(data);
         if(!this.__TEST__) {
-            this.postMessage(data);
+            // 给上层（electron）挪个时钟周期，事件本身是离散的，没影响
+            setTimeout(() => {
+                this.postMessage(data);
+            }, 0)
         }
         return data;
     };
@@ -121,7 +130,6 @@ class Client {
     handleRequestResponse = (res) => {
         check(res.data, is.notUndef, 'the data info in the response is required');
         check(res.meta, is.notUndef, 'meta info is required');
-
         let { data, meta } = res;
         let requestData = this.requestPool[meta.uuid];
 
