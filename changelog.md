@@ -1,6 +1,9 @@
 0.2.0
 暴露关键节点实现，收消息、发消息、窗口判断等，支持electron
 
+0.1.1
+离线消息处理逻辑
+
 0.1.0
 callback参数调整为function(err, data){}，支持promisify
 
