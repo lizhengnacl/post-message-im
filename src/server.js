@@ -5,6 +5,16 @@
 import { log, check, is, isPromise, getResponseTemplate } from './utils';
 import CONSTANTS from './constants';
 
+function getIframeIdByEvent (e) {
+    let id = '';
+    document.querySelectorAll('iframe').forEach((iframe) => {
+        if(iframe.contentWindow === e.source) {
+            id = iframe.id; // 未设置ID为空字符串
+        }
+    })
+    return id;
+}
+
 class Server {
     constructor (props) {
         check(props.validator, is.notUndef, 'validator is required');
@@ -45,7 +55,16 @@ class Server {
                 return;
             }
             if(data && (data.$$symbol === this.$$symbol)) {
-                if(!this._checkSource(e, data.token && data.token.id)) {
+                let domId = getIframeIdByEvent(e);
+
+                if(domId === '') {
+                    log('error', 'iframe dom id is not exist', domId);
+                    return;
+                }
+
+                data.meta.domId = domId;
+
+                if(!this._checkSource(data.token && data.token.id, domId)) {
                     log('error', 'client id is not exist or duplicated', data.token);
                     return;
                 }
@@ -54,15 +73,16 @@ class Server {
         }, false);
     };
 
-    _checkSource = (e, id) => {
-        // 防止伪造ID
-        id = this.prefixOfId + id;
-        let iframe = document.getElementById(id);
-        if(iframe) {
-            return iframe.contentWindow === e.source
-        } else {
-            return false;
-        }
+    _checkSource = (id, domId) => {
+        return domId.indexOf(id) === 0;
+
+        // id = this.prefixOfId + id;
+        // let iframe = document.getElementById(id);
+        // if(iframe) {
+        //     return iframe.contentWindow === e.source
+        // } else {
+        //     return false;
+        // }
     };
 
     distribute = (data) => {
@@ -96,7 +116,7 @@ class Server {
     };
 
     getFrameWindow = (id) => {
-        id = this.prefixOfId + id;
+        // id = this.prefixOfId + id;
         return document.getElementById(id) || null;
     };
 
@@ -131,7 +151,7 @@ class Server {
     };
 
     _response = (data) => {
-        let { token: { id } } = data;
+        let { token: { id }, meta: { domId } } = data;
 
         data.$$symbol = this.$$symbol;
         data.meta = this.getMeta(data.meta);
@@ -142,7 +162,7 @@ class Server {
             return;
         }
 
-        let frame = this.getFrameWindow(id);
+        let frame = this.getFrameWindow(domId);
         // TODO 由frame可用性切到程序可用性
         if(frame) {
             this.postMessageToChild(frame, data)
