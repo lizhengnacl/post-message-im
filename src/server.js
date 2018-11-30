@@ -19,7 +19,6 @@ class Server {
     constructor (props) {
         check(props.validator, is.notUndef, 'validator is required');
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
-        this.prefixOfId = props.prefixOfId || '';
         this.validator = props.validator || function() {return true;};
         // 返回null表示中断本次请求
         this.dataFilter = props.dataFilter || function(data) {return data};
@@ -55,34 +54,10 @@ class Server {
                 return;
             }
             if(data && (data.$$symbol === this.$$symbol)) {
-                let domId = getIframeIdByEvent(e);
-
-                if(domId === '') {
-                    log('error', 'iframe dom id is not exist', domId);
-                    return;
-                }
-
-                data.meta.domId = domId;
-
-                if(!this._checkSource(data.token && data.token.id, domId)) {
-                    log('error', 'client id is not exist or duplicated', data.token);
-                    return;
-                }
+                data.token.domId = getIframeIdByEvent(e);
                 this.distribute(data);
             }
         }, false);
-    };
-
-    _checkSource = (id, domId) => {
-        return domId.indexOf(id) === 0;
-
-        // id = this.prefixOfId + id;
-        // let iframe = document.getElementById(id);
-        // if(iframe) {
-        //     return iframe.contentWindow === e.source
-        // } else {
-        //     return false;
-        // }
     };
 
     distribute = (data) => {
@@ -116,7 +91,6 @@ class Server {
     };
 
     getFrameWindow = (id) => {
-        // id = this.prefixOfId + id;
         return document.getElementById(id) || null;
     };
 
@@ -140,7 +114,9 @@ class Server {
                 type: type,
                 data: data,
                 token: {
-                    id: id
+                    // 参考 client.distribute 方法
+                    // id: id
+                    domId: id
                 }
             });
         } else {
@@ -151,7 +127,7 @@ class Server {
     };
 
     _response = (data) => {
-        let { token: { id }, meta: { domId } } = data;
+        let { token: { id, domId } } = data;
 
         data.$$symbol = this.$$symbol;
         data.meta = this.getMeta(data.meta);
@@ -162,7 +138,8 @@ class Server {
             return;
         }
 
-        let frame = this.getFrameWindow(domId);
+        // 对server端约定，优先使用domId进程通信
+        let frame = this.getFrameWindow(domId || id);
         // TODO 由frame可用性切到程序可用性
         if(frame) {
             this.postMessageToChild(frame, data)
@@ -174,7 +151,8 @@ class Server {
 
     offlinePool = {};
     addOfflinePool = (data) => {
-        let { type, token: { id } } = data;
+        let { type, token: { id, domId } } = data;
+        id = domId || id;
         if(!this.offlinePool[id]) {
             this.offlinePool[id] = []
         }
@@ -191,7 +169,8 @@ class Server {
     };
     handleOfflinePool = (err, data) => {
         // 当触发获取离线消息时，frame对象是准备好的
-        let { token: { id } } = data;
+        let { token: { id, domId } } = data;
+        id = domId || id;
         let offlineResponse = this.offlinePool[id] || [];
         this.removeOfflinePool(id);
         // 这里先按一次性处理，坏处是消息体结构暴露给业务方了
