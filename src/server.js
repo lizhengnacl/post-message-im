@@ -5,10 +5,19 @@
 import { log, check, is, isPromise, getResponseTemplate } from './utils';
 import CONSTANTS from './constants';
 
+function getIframeIdByEvent (e) {
+    let id = '';
+    document.querySelectorAll('iframe').forEach((iframe) => {
+        if(iframe.contentWindow === e.source) {
+            id = iframe.id; // 未设置ID为空字符串
+        }
+    })
+    return id;
+}
+
 class Server {
     constructor (props) {
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
-        this.prefixOfId = props.prefixOfId || '';
         this.validator = (props.validator && props.validator.bind(this)) || function() {return true;};
         // 返回null表示中断本次请求
         this.dataFilter = props.dataFilter || function(data) {return data};
@@ -56,24 +65,10 @@ class Server {
                 return;
             }
             if(data && (data.$$symbol === this.$$symbol)) {
-                if(!this._checkSource(e, data.token && data.token.id)) {
-                    log('error', 'client id is not exist or duplicated', data.token);
-                    return;
-                }
+                data.token.domId = getIframeIdByEvent(e);
                 this.distribute(data);
             }
         }, false);
-    };
-
-    _checkSource = (e, id) => {
-        // 防止伪造ID
-        id = this.prefixOfId + id;
-        let iframe = document.getElementById(id);
-        if(iframe) {
-            return iframe.contentWindow === e.source
-        } else {
-            return false;
-        }
     };
 
     distribute = (data) => {
@@ -107,7 +102,6 @@ class Server {
     };
 
     getFrameWindow = (id) => {
-        id = this.prefixOfId + id;
         return document.getElementById(id) || null;
     };
 
@@ -131,7 +125,9 @@ class Server {
                 type: type,
                 data: data,
                 token: {
-                    id: id
+                    // 参考 client.distribute 方法
+                    // id: id
+                    domId: id
                 }
             });
         } else {
@@ -142,7 +138,7 @@ class Server {
     };
 
     _response = (data) => {
-        let { token: { id } } = data;
+        let { token: { id, domId } } = data;
 
         data.$$symbol = this.$$symbol;
         data.meta = this.getMeta(data.meta);
@@ -153,7 +149,8 @@ class Server {
             return;
         }
 
-        let frame = this.getFrameWindow(id);
+        // 对server端约定，优先使用domId进程通信
+        let frame = this.getFrameWindow(domId || id);
         // TODO 由frame可用性切到程序可用性
         if(frame) {
             this.postMessageToChild(frame, data)
@@ -165,7 +162,8 @@ class Server {
 
     offlinePool = {};
     addOfflinePool = (data) => {
-        let { type, token: { id } } = data;
+        let { type, token: { id, domId } } = data;
+        id = domId || id;
         if(!this.offlinePool[id]) {
             this.offlinePool[id] = []
         }
@@ -187,8 +185,8 @@ class Server {
     // 适配 Promisify
     handleOfflinePool = (err, data) => {
         // 当触发获取离线消息时，frame对象是准备好的
-        let { token: { id } } = data;
-        // 默认值，没有任何离线消息时，客户端发起离线请求的情况
+        let { token: { id, domId } } = data;
+        id = domId || id;
         let offlineResponse = this.offlinePool[id] || [];
         this.removeOfflinePool(id);
         // 这里先按一次性处理，坏处是消息体结构暴露给业务方了
