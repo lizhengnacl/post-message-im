@@ -7,6 +7,7 @@
 ## Feature
 * 兼容所有支持ES5语法的浏览器
 * 支持离线消息模型
+* 平台中立，支持electron
 
 ## 安装
 
@@ -22,7 +23,7 @@ import { Client } from 'post-message-im'
 const client = new Client({id: 'iframe id'})
 
 client.request({
-    type: '', 
+    type: '',
     params: {},
     callback: (err, res) => {}
 })
@@ -59,7 +60,7 @@ const server = new Server({validator: () => {}})
 server.on({
     type: '',
     callback: (err, res) => {
-        // get data 
+        // get data
         server.response(Object.assign({}, res, {data: data}))
     }
 })
@@ -92,7 +93,7 @@ client.request({
     type: '',
 }).then((data) => {})
 
-// 这种方式也支持，显式的callback参数优先级会更高，但不建议这么使用
+// 显式的callback参数优先级会更高，但不建议这么使用
 c.request({
     type: '',
     callback: (err, data) => {}
