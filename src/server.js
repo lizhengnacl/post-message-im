@@ -2,23 +2,21 @@
  * * Created by lee on 2018/2/2
  */
 
-import { log, check, is, isPromise, getResponseTemplate } from './utils';
+import { log, check, is, isPromise, getResponseTemplate, getIframeIdByEvent } from './utils';
+import Status from './status';
 import CONSTANTS from './constants';
-
-function getIframeIdByEvent (e) {
-    let id = '';
-    document.querySelectorAll('iframe').forEach((iframe) => {
-        if(iframe.contentWindow === e.source) {
-            id = iframe.id; // 未设置ID为空字符串
-        }
-    })
-    return id;
-}
 
 class Server {
     constructor (props) {
+        check(props.validator, is.notUndef, 'validator is required');
+        this.status = new Status();
+
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
-        this.validator = (props.validator && props.validator.bind(this)) || function() {return true;};
+        this.validator = (props.validator && props.validator.bind(this)) || function({ domId, id }) {
+            // 任意一个请求打过来，都说明对方在线
+            this.status.load(domId || id);
+            return true;
+        };
         // 返回null表示中断本次请求
         this.dataFilter = props.dataFilter || function(data) {return data};
         this.__TEST__ = props.__TEST__ || false;
@@ -44,6 +42,7 @@ class Server {
         if(!this.__TEST__) {
             this.subscribe();
         }
+
         // 注册离线消息
         this.on({
             type: CONSTANTS.TYPE.OFFLINE,
@@ -150,9 +149,10 @@ class Server {
         }
 
         // 对server端约定，优先使用domId进程通信
-        let frame = this.getFrameWindow(domId || id);
-        // TODO 由frame可用性切到程序可用性
-        if(frame) {
+        id = domId || id;
+        let frame = this.getFrameWindow(id);
+        let isLoaded = this.status.isLoaded(id);
+        if(isLoaded && frame) {
             this.postMessageToChild(frame, data)
         } else {
             this.addOfflinePool(data);
@@ -187,6 +187,10 @@ class Server {
         // 当触发获取离线消息时，frame对象是准备好的
         let { token: { id, domId } } = data;
         id = domId || id;
+
+        // 应用可用性
+        this.status.load(id);
+
         let offlineResponse = this.offlinePool[id] || [];
         this.removeOfflinePool(id);
         // 这里先按一次性处理，坏处是消息体结构暴露给业务方了

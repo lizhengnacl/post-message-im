@@ -64,3 +64,13 @@ export function getResponseTemplate(code, data){
 
     return res;
 }
+
+export function getIframeIdByEvent (e) {
+    let id = '';
+    document.querySelectorAll('iframe').forEach((iframe) => {
+        if(iframe.contentWindow === e.source) {
+            id = iframe.id; // 未设置ID为空字符串
+        }
+    })
+    return id;
+}
