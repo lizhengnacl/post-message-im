@@ -30,7 +30,7 @@ class Server {
         this.postMessageToChild = (props.postMessageToChild && props.postMessageToChild.bind(this)) || this.postMessageToChild;
 
         // 单个客户端缓存池容量
-        this.capacity = props.capacity || 100;
+        this.capacity = typeof props.capacity === 'number'? props.capacity: 100;
 
         this.CONSTANTS = CONSTANTS;
         this.init();
