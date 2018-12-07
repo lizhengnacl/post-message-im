@@ -125,8 +125,8 @@ class Server {
                 data: data,
                 token: {
                     // 参考 client.distribute 方法
-                    // id: id
-                    domId: id
+                    domId: id,
+                    id: id,
                 }
             });
         } else {
