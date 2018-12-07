@@ -174,8 +174,12 @@ class Server {
             this.offlinePool[id].push(data);
         }
         // 单个客户端，只存储定量的离线消息，防止某些客户端肯本不处理离线消息导致的内存泄露
-        if(this.offlinePool[id].length > this.capacity) {
-            this.offlinePool[id] = this.offlinePool[id].slice(-this.capacity);
+        if(this.offlinePool[id].length > this.capacity && this.capacity >= 0) {
+            if(this.capacity === 0) {
+                this.offlinePool[id] = [];
+            } else {
+                this.offlinePool[id] = this.offlinePool[id].slice(-this.capacity);
+            }
         }
     };
     removeOfflinePool = (frameId) => {
