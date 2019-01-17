@@ -4,6 +4,7 @@ node_js:
 install:
   - npm i
 script:
+  - npm run build
   - npm t
 branches:
   only:
