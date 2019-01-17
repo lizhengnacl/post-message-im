@@ -23,7 +23,13 @@
   "bugs": {
     "url": "https://github.com/lizhengnacl/post-message-im/issues"
   },
-  "keywords": ["postMessage", "IM", "buffer", "cache", "browser"],
+  "keywords": [
+    "postMessage",
+    "IM",
+    "buffer",
+    "cache",
+    "browser"
+  ],
   "author": "",
   "license": "ISC",
   "description": "postMessage client, server",
