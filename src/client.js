@@ -21,6 +21,7 @@ class Client {
 
         // 与环境，electron、web耦合的节点暴露出去，交给上层处理
         // 限制上层不要使用箭头函数
+        this.handleEventListener = (props.handleEventListener && props.handleEventListener.bind(this)) || this.handleEventListener;
         this.postMessage = (props.postMessage && props.postMessage.bind(this)) || this.postMessage;
         this.subscribe = (props.subscribe && props.subscribe.bind(this)) || this.subscribe;
 
@@ -36,25 +37,31 @@ class Client {
         }
     };
 
+    handleEventListener (e) {
+        let data = e.data;
+        try {
+            if(is.string(data)) {
+                data = JSON.parse(data);
+            }
+        } catch(err) {
+            if(data && data.type === 'webpackOk') return;
+            log('error', 'json parse error', err.message);
+            // 提前结束
+            return;
+        }
+        if(data.$$symbol === this.$$symbol) {
+            // 只处理iframe的情况
+            parent !== window && this.distribute(data);
+        }
+    }
+
     subscribe = () => {
-        window.addEventListener('message', (e) => {
-            let data = e.data;
-            try {
-                if(is.string(data)) {
-                    data = JSON.parse(data);
-                }
-            } catch(err) {
-                if(data && data.type === 'webpackOk') return;
-                log('error', 'json parse error', err.message);
-                // 提前结束
-                return;
-            }
-            if(data.$$symbol === this.$$symbol) {
-                // 只处理iframe的情况
-                parent !== window && this.distribute(data);
-            }
-        }, false);
+        window.addEventListener('message', this.handleEventListener, false);
     };
+
+    destroy = () => {
+        window.removeEventListener('message', this.handleEventListener, false);
+    }
 
     distribute = (data) => {
         if(!is.array(data)) {

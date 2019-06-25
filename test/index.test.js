@@ -183,7 +183,7 @@ test('server offline', () => {
     expect(server.offlinePool['id'].length).toEqual(2);
 
     let userData = {
-        type: CONSTANTS.TYPE.OFFLINE,
+        type: 'offline',
         params: {
             id: ''
         },

@@ -50,25 +50,31 @@ class Server {
         });
     };
 
+    handleEventListener (e) {
+        let data = e.data;
+        try {
+            if(is.string(data)) {
+                data = JSON.parse(data);
+            }
+        } catch(err) {
+            if(data && data.type === 'webpackOk') return;
+            log('error', 'json parse error', err.message);
+            // 提前结束
+            return;
+        }
+        if(data && (data.$$symbol === this.$$symbol)) {
+            data.token.domId = getIframeIdByEvent(e);
+            this.distribute(data);
+        }
+    }
+
     subscribe = () => {
-        window.addEventListener('message', (e) => {
-            let data = e.data;
-            try {
-                if(is.string(data)) {
-                    data = JSON.parse(data);
-                }
-            } catch(err) {
-                if(data && data.type === 'webpackOk') return;
-                log('error', 'json parse error', err.message);
-                // 提前结束
-                return;
-            }
-            if(data && (data.$$symbol === this.$$symbol)) {
-                data.token.domId = getIframeIdByEvent(e);
-                this.distribute(data);
-            }
-        }, false);
+        window.addEventListener('message', this.handleEventListener, false);
     };
+
+    destroy = () => {
+        window.removeEventListener('message', this.handleEventListener, false);
+    }
 
     distribute = (data) => {
         check(data, is.notUndef, 'data is required');
