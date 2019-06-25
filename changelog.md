@@ -1,3 +1,6 @@
+0.1.10
+bugfix: server bind handleEventListener
+
 0.1.9
 暴露destroy方法，支持卸载事件监听；规范模块导出格式
 

@@ -23,6 +23,7 @@ class Server {
 
         // 将与环境，electron、web，耦合的节点抛出去，交给上层处理
         // 限制上层不要使用箭头函数
+        this.handleEventListener = (props.handleEventListener && props.handleEventListener.bind(this)) || this.handleEventListener;
         this.subscribe = (props.subscribe && props.subscribe.bind(this)) || this.subscribe;
         // 通过ID找到窗体
         this.getFrameWindow = (props.getFrameWindow && props.getFrameWindow.bind(this)) || this.getFrameWindow;
