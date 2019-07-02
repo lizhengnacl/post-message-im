@@ -37,7 +37,7 @@ class Client {
         }
     };
 
-    handleEventListener (e) {
+    handleEventListener = (e) => {
         let data = e.data;
         try {
             if(is.string(data)) {

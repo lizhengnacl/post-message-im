@@ -1,3 +1,6 @@
+0.1.11
+handleEventListener 默认值，绑定上下文
+
 0.1.10
 bugfix: server bind handleEventListener
 
