@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/lizhengnacl/post-message-im.svg?branch=master)](https://travis-ci.org/lizhengnacl/post-message-im)
 [![npm downloads](https://img.shields.io/npm/dm/post-message-im.svg?style=flat-square)][npm-url]
 
+> Electron版请参考：[electron-ipc-im](https://github.com/lizhengnacl/electron-ipc-im)，抽象主进程、主窗口、非主窗口，让通信更简单。
 
 ## 概述
 页面`server`与iframe`client`的通信过程，可以用一种简易的消息模型来理解。
@@ -9,7 +10,7 @@
 ## Feature
 * 兼容所有支持ES5语法的浏览器
 * 支持离线消息模型
-* 平台中立，支持electron。详情参考：[electron-ipc-im](https://www.npmjs.com/package/electron-ipc-im)
+* 平台中立，支持electron
 
 ## 安装
 
