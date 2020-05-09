@@ -9,7 +9,7 @@
 ## Feature
 * 兼容所有支持ES5语法的浏览器
 * 支持离线消息模型
-* 平台中立，支持electron
+* 平台中立，支持electron。详情参考：[electron-ipc-im](https://www.npmjs.com/package/electron-ipc-im)
 
 ## 安装
 
