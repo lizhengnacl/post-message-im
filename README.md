@@ -97,7 +97,7 @@ client.request({
 }).then((data) => {})
 
 // 显式的callback参数优先级会更高，但不建议这么使用
-c.request({
+client.request({
     type: '',
     callback: (err, data) => {}
 }).then((data) => {})
