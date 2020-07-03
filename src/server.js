@@ -7,15 +7,21 @@ import Status from './status';
 import CONSTANTS from './constants';
 
 class Server {
-    constructor (props) {
-        check(props.validator, is.notUndef, 'validator is required');
+    constructor (props = {}) {
+        // check(props.validator, is.notUndef, 'validator is required');
         this.status = new Status();
 
         this.$$symbol = props.symbol || 'POST_MESSAGE_IM';
-        this.validator = (props.validator && props.validator.bind(this)) || function({ domId, id }) {
-            // 任意一个请求打过来，都说明对方在线
-            this.status.load(domId || id);
-            return true;
+        this.validator = function(token, data) {
+            // 这里只做在线判断，不做权限判断
+            let { token: { id, domId } } = data;
+            id = domId || id;
+            this.status.load(id);
+            if(typeof props.validator === 'function'){
+                return props.validator(token, data);
+            }else{
+                return true;
+            }
         };
         // 返回null表示中断本次请求
         this.dataFilter = props.dataFilter || function(data) {return data};
@@ -81,7 +87,7 @@ class Server {
         check(data, is.notUndef, 'data is required');
         check(data.token, is.notUndef, 'token is required');
 
-        let res = this.validator(data.token);
+        let res = this.validator(data.token, data);
         if(isPromise(res)) {
             res.then((ok) => {
                 this.handleValidator(ok, data);
@@ -198,9 +204,8 @@ class Server {
         // 当触发获取离线消息时，frame对象是准备好的
         let { token: { id, domId } } = data;
         id = domId || id;
-
-        // 应用可用性
-        this.status.load(id);
+        // // 应用可用性
+        // this.status.load(id);
 
         let offlineResponse = this.offlinePool[id] || [];
         this.removeOfflinePool(id);
